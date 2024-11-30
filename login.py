@@ -23,6 +23,8 @@ def cek_file(file):
         print("File tidak ditemukan. \nSilahkan periksa kembali nama dan lokasinya.")
         sys.exit()
 
+def halo():
+    pass
 
 def input_nama(kata):
     sesuai = True
