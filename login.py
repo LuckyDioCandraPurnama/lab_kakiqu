@@ -24,7 +24,8 @@ def cek_file(file):
         sys.exit()
 
 def halo():
-    pass
+    while True:
+        pass
 
 def input_nama(kata):
     sesuai = True
