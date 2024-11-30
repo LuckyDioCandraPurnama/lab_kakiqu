@@ -1,0 +1,3 @@
+id,nim,nama,kategori,id_barang,barang,jenis,jml_pinjam,jml_kembali,tgl_pinjam,tgl_kembali,tenggat,status
+1,242410102032,fahmi gleeful,alat,2,apron lab,unfragile,2,2,2024-11-26,2024-11-26,2024-11-27,selesai
+2,242410101006,bagas,bahan,2,natrium,padat,10,0,2024-11-28,-,2024-11-30,dipinjam

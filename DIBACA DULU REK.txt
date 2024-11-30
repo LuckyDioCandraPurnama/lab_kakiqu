@@ -1,0 +1,12 @@
+
+Persyaratan biar program bisa jalan :
+1. Udah install pandas
+2. Udah lulus PPMB 
+
+Cara run biar ga error :
+
+1. Download 1 folder Lab KaKiQu
+2. Buka VScode -> Open Folder -> pilih folder Lab KaKiQu
+3. Run main.py
+
+* Saat login gunakan username & password dari users.csv

@@ -1,0 +1,16 @@
+id,nama,jenis,stok,dipinjam
+1,fosfor,padat,20,0
+2,natrium,padat,15,10
+3,sulfur,padat,10,0
+4,kalsium,padat,5,0
+5,silikon,padat,2,0
+6,hidrogen,gas,3,0
+7,helium,gas,10,0
+8,nitrogen gas,gas,15,0
+9,oksigen,gas,10,0
+10,fluorin,gas,10,0
+11,nitrogen cair,cair,15,0
+12,alkohol,cair,10,0
+13,aseton,cair,10,0
+14,asam klorida,cair,5,0
+15,asam sulfat,cair,12,0
