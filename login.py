@@ -2,6 +2,8 @@ import pandas as pd
 import os
 import sys
 
+# PUNYA YUDHA
+
 login_status = False  # Variabel global untuk melacak status login
 
 def clear_alert(n=1):
