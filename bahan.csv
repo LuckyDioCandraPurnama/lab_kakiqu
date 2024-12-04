@@ -1,8 +1,8 @@
 id,nama,jenis,stok,dipinjam
 1,fosfor,padat,20,0
-2,natrium,padat,15,10
+2,natrium,padat,25,0
 3,sulfur,padat,10,0
-4,kalsium,padat,5,0
+4,kalsium,padat,4,1
 5,silikon,padat,2,0
 6,hidrogen,gas,3,0
 7,helium,gas,10,0

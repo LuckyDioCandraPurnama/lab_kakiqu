@@ -23,9 +23,6 @@ def cek_file(file):
         print("File tidak ditemukan. \nSilahkan periksa kembali nama dan lokasinya.")
         sys.exit()
 
-def halo():
-    pass
-
 def input_nama(kata):
     sesuai = True
     while True:
@@ -132,7 +129,7 @@ def register():
         print(" [3] Batal")
         print("-" * 26)
         while True:
-            pilih = input("Pilih Menu [1/2/3]: ")
+            pilih = input("Pilih Menu [1-3]: ")
             match pilih:
                 case "1":
                     # Menambahkan pengguna baru sebagai
@@ -157,7 +154,7 @@ def register():
                     break
                 case "3":
                     print("=" * 24)
-                    print("==== Peminjaman Dibatalkan ====")
+                    print("==== Registrasi Dibatalkan ====")
                     input("Tekan Enter untuk kembali ke menu")
                     return  # Keluar dari fungsi jika dibatalkan
                 case _:
@@ -187,7 +184,7 @@ def logout():
 
 def pil_menu():
     while True:
-        pilihan = input("Pilih Menu [1/2/3]: ")
+        pilihan = input("Pilih Menu [1-3]: ")
         match pilihan:
             case "1":
                 login()
@@ -216,9 +213,9 @@ def menu_login():
 ║  Selamat Datang  ║
 ║┌────────────────┐║""")
     
-    print("║│  1. Login      │║")
-    print("║│  2. Register   │║")
-    print("║│  3. Keluar     │║")
+    print("║│  [1] Login     │║")
+    print("║│  [2] Register  │║")
+    print("║│  [3] Keluar    │║")
     print("║├────────────────┤║")
     print("║│   Login Page   │║")
     print("║└────────────────┘║")

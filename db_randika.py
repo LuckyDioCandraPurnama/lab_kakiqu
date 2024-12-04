@@ -1,10 +1,10 @@
 import pandas as pd
 import login as log
-from datetime import date,timedelta
 from tabulate import tabulate
+from datetime import date,timedelta
 
 #================================================================================================
-# DATA HANDLING INPUT DAN UPDATE TANGGAL OTOMATIS
+# DATA HANDLING INPUT DAN UPDATE TANGGAL
 #================================================================================================
 
 def input_int(kata):
@@ -18,10 +18,9 @@ def input_int(kata):
             input("Tekan enter untuk mencoba kembali.")
             log.clear_alert(3)
 
-
 def input_barang(kata):
     while True:
-        nama = input(f"{kata}").strip().lower()
+        nama = input(f"{kata}").strip()
         # if nama and nama.isalpha():
 
         if nama:
@@ -30,7 +29,6 @@ def input_barang(kata):
             print("Input harus berupa huruf")
             input("Tekan Enter untuk mencoba kembali.")
             log.clear_alert(3)
-
 
 def update_status():
     data = log.cek_file('peminjaman.csv')
@@ -79,13 +77,13 @@ def dashboard(user):
 
 def pilih_dashboard(user):
     while True:
+        pilihan = input("Pilih Menu [1/2/3/...]: ")
         if user['role'] == "mahasiswa":
-            pilihan = input("Pilih Menu [1-6]: ")
             match pilihan:
                 case "1":
                     menu_daftar_barang()
                 case "2":
-                    sedang_dipinjam(user)
+                    dipinjam_user(user)
                 case "3":
                     menu_peminjaman(user)
                 case "4":
@@ -102,7 +100,6 @@ def pilih_dashboard(user):
                     continue
         
         elif user['role'] == "admin":
-            pilihan = input("Pilih Menu [1-7]: ")
             match pilihan:
                 case "1":
                     menu_daftar_barang()
@@ -113,7 +110,7 @@ def pilih_dashboard(user):
                 case "4":
                     menu_pengembalian(user)
                 case "5":
-                    sedang_dipinjam(user)
+                    dipinjam_admin()
                 case "6":
                     history_admin()
                 case "7":
@@ -126,30 +123,32 @@ def pilih_dashboard(user):
                     continue
         break
 
-#================================================================================================
-# NAVIGASI SUB MENU
-#================================================================================================
 
 def menu_daftar_barang():
     while True:
         log.clear_terminal()
-        print("==== Menu Data Barang ====")
-        daftar =[["[1]", "Daftar Alat"],
-          ["[2]", "Daftar Bahan"],
-          ["[3]", "Cari Alat"],
-          ["[4]", "Cari Bahan"],
-          ["[5]", "Kembali"]]
+        print("=== Pilih Jenis Barang ===")
+        daftar =[["[1]", "🔬 Daftar Alat"],
+          ["[2]", "🧪 Daftar Bahan"],
+          ["[3]", "🔍 Cari Alat"],
+          ["[4]", "🔍 Cari Bahan"],
+          ["[5]", "🔙 Kembali"]]
         headers = ["No","Menu"]
         print(tabulate(daftar, headers=headers, tablefmt="fancy_grid"))
-        sub_pilihan = input("Pilih Menu [1-5]: ")
+        # print("-"*24)
+        sub_pilihan = input("Pilih Menu [1/2/3/4]: ")
         match sub_pilihan:
             case "1":
+                log.clear_terminal()
                 tampilan_daftar("alat.csv","Alat")
             case "2":
+                log.clear_terminal()
                 tampilan_daftar("bahan.csv","Bahan")
             case "3":
+                log.clear_terminal()
                 cari_barang("alat.csv","Alat")
             case "4":
+                log.clear_terminal()
                 cari_barang("bahan.csv","Bahan")
             case "5":
                 log.clear_terminal()
@@ -159,8 +158,7 @@ def menu_daftar_barang():
                 input("Tekan Enter untuk mencoba kembali.")
                 log.clear_alert(4)
                 continue
-            
-        input("\nTekan Enter untuk kembali ke Menu Utama.")
+        input("\nTekan Enter untuk kembali ke menu.")
         log.clear_terminal()
         break
 
@@ -176,7 +174,7 @@ def menu_update_barang():
           ["[5]", "Kembali"]]
         headers = ["No","Menu"]
         print(tabulate (daftar, headers=headers, tablefmt="fancy_grid"))
-        sub_pilihan = input("Pilih Menu [1-5]: ")
+        sub_pilihan = input("Pilih Menu [1/2/3/4/5]: ")
         match sub_pilihan:
             case "1":
                 tambah_barang("alat.csv","Alat")
@@ -184,8 +182,12 @@ def menu_update_barang():
                 tambah_barang("bahan.csv","Bahan")
             case "3":
                 sub_menu_update_barang('alat.csv','Alat')
+                tampilan_daftar("alat.csv","Alat")
+                edit_produk("alat.csv","Alat")
             case "4":
                 sub_menu_update_barang('bahan.csv','Bahan')
+                tampilan_daftar("bahan.csv","Alat")
+                edit_produk("bahan.csv","Bahan")
             case "5":
                 log.clear_terminal()
                 return
@@ -210,6 +212,7 @@ def sub_menu_update_barang(file, judul):
           ["[4]", "Kembali"]]
         headers = ["No","Menu"]
         print(tabulate(daftar, headers=headers, tablefmt="fancy_grid"))
+        print("-"*24)
         sub_pilihan = input("Pilih Menu [1/2/3/4]: ")
         match sub_pilihan:
             case "1":
@@ -244,7 +247,7 @@ def menu_peminjaman(user):
           ["[3]", "Kembali"]]
         headers = ["No","Menu"]
         print(tabulate(daftar, headers=headers, tablefmt="fancy_grid"))
-        sub_pilihan = input("Pilih Menu [1-3]: ")
+        sub_pilihan = input("Pilih Menu [1/2]: ")
         match sub_pilihan:
             case "1":
                 tambah_pinjam("alat.csv","Alat",user)
@@ -272,7 +275,7 @@ def menu_pengembalian(user):
           ["[3]", "Kembali"]]
         headers = ["No","Menu"]
         print(tabulate(daftar, headers=headers, tablefmt="fancy_grid"))
-        sub_pilihan = input("Pilih Menu [1-3]: ")
+        sub_pilihan = input("Pilih Menu [1/2]: ")
         match sub_pilihan:
             case "1":
                 kembali_pinjam("alat.csv","Alat",user)
@@ -294,12 +297,13 @@ def menu_pengembalian(user):
 def menu_history(user):
     while True:
         log.clear_terminal()
+        print("=== Cari History Peminjaman ===")
         daftar =[["[1]", "History Peminjman Alat"],
           ["[2]", "History Peminjaman Bahan"],
           ["[3]", "Kembali"]]
         headers = ["No","Menu"]
         print(tabulate(daftar, headers=headers, tablefmt="fancy_grid"))
-        sub_pilihan = input("Pilih Menu [1-3]: ")
+        sub_pilihan = input("Pilih Menu [1/2]: ")
         match sub_pilihan:
             case "1":
                 history_user("peminjaman.csv", user, 'Alat')
@@ -321,19 +325,21 @@ def menu_history(user):
 # KELOLA ALAT DAN BAHAN
 #================================================================================================
 
-def tampilan_daftar(file,judul):
+
+def tampilan_daftar(file, judul):
     # Membaca file CSV ke dalam DataFrame
     log.clear_terminal()
     data = log.cek_file(file)
-
+    
     # Konversi DataFrame ke daftar untuk digunakan dengan tabulate
     data_list = data.values.tolist()
     headers = data.columns.tolist()
-
+    
     print(f"======== Daftar {judul} ========")
     print(tabulate(data_list, headers=headers, tablefmt="fancy_grid"))  # Gunakan tabulate untuk mencetak tabel
-
+    
     return data
+
 
 
 def cari_barang(file,judul):
@@ -346,135 +352,136 @@ def cari_barang(file,judul):
     # Filter data berdasarkan input nama produk (case-insensitive)
     hasil_cari = data[data['nama'].str.lower().str.contains(nama_barang.lower())]
     
-    print("\n=== Hasil Pencarian ===")
+    print("\n=== HASIL PENCARIAN ===")
 
-    if not hasil_cari.empty:
-        hasil_cari_list = hasil_cari[['id', 'nama', 'jenis', 'stok','dipinjam']].values.tolist()
-        headers = ['ID', 'Nama', 'Jenis', 'Stok','Dipinjam']
+    # if not hasil_cari.empty:
+    if len(hasil_cari)>0:
+        hasil_cari_list = hasil_cari[['id', 'nama', 'jenis', 'stok']].values.tolist()
+        headers = ['ID', 'Nama', 'Jenis', 'Stok']
+        # print(hasil_cari[['id', 'nama', 'jenis', 'stok']].to_string(index=False))
         print(tabulate (hasil_cari_list, headers=headers, tablefmt="fancy_grid"))
+        # print("-"* (19 + hasil_cari['nama'].str.len().max()))      # cuma ngeprint tampilan, menyesuaikan panjang nama barang yang ditampilkan
     else:
-        print("-"*24)
+        print("-"*23)
         print(f"{judul} tidak ditemukan")
-
-
-def tambah_barang(file,judul):
-    log.clear_terminal()
+#codingan ku 
+def tambah_barang(file, judul):
     # Membaca data dari produk.csv
     data = log.cek_file(file)
-    if not data.empty:
-    # if len(data)>0:
-        # id_baru = data['id'].max() + 1
-        id_baru = data.iloc[-1]["id"]+1
-    else:
-        id_baru = 1
-        
+    log.clear_terminal()
     print(f"==== Tambah {judul} ====")
     while True:
         # Validasi: Cek apakah nama produk sudah ada
-        nama_barang = input_barang(f"Masukkan nama {judul} baru: ")
+        nama_barang = input_barang(f"Masukkan nama {judul} baru: ").strip().lower()
         while nama_barang in data['nama'].str.lower().values:
             print(f"Nama {judul} sudah ada. Silakan gunakan nama lain.")
             input("Tekan Enter untuk mencoba kembali")
             log.clear_alert(3)
-            nama_barang = input_barang(f"Masukkan nama {judul} baru: ")
+            nama_barang = input_barang(f"Masukkan nama {judul} baru: ").strip().lower()
+
+        if judul == 'Alat':
+            print("Pilih jenis Alat:")
+            pilihan_jenis = [["1", "Fragile"], ["2", "Unfragile"]]
+            headers = ["No", "Jenis"]
+            print(tabulate(pilihan_jenis, headers=headers, tablefmt="fancy_grid"))
+            jenis_input = input("Masukkan nomor jenis Alat [1/2]: ").strip()
+            while jenis_input not in ['1', '2']:
+                print("Pilihan tidak valid. Pilih nomor yang sesuai.")
+
+                jenis_input = input("Masukkan nomor jenis Alat [1/2]: ").strip()
+            jenis = "fragile" if jenis_input == '1' else "unfragile"
+
+        elif judul == 'Bahan':
+            print("Pilih jenis Bahan:")
+            pilihan_jenis = [["1", "Padat"], ["2", "Cair"], ["3", "Gas"]]
+            headers = ["No", "Jenis"]
+            print(tabulate(pilihan_jenis, headers=headers, tablefmt="fancy_grid"))
+            jenis_input = input("Masukkan nomor jenis Bahan [1/2/3]: ").strip()
+            while jenis_input not in ['1', '2', '3']:
+                print("Pilihan tidak valid. Pilih nomor yang sesuai.")
+
+                jenis_input = input("Masukkan nomor jenis Bahan [1/2/3]: ").strip()
+            jenis = "padat" if jenis_input == '1' else "cair" if jenis_input == '2' else "gas"
+
+        stok = input_int(f"Masukkan stok {judul}: ")
+        if len(data) > 0:
+            id_baru = data.iloc[-1]["id"] + 1
+        else:
+            id_baru = 1
+
+        # Membuat DataFrame produk baru
+        produk_baru = pd.DataFrame([{
+            "id": id_baru,
+            "nama": nama_barang,
+            "jenis": jenis,
+            "stok": stok,
+            "dipinjam": 0,
+        }])
+        # Menggabungkan produk baru dengan DataFrame lama
+        data_baru = pd.concat([data, produk_baru])
+        data_baru.to_csv(file, index=False)
+        print(f"\n{judul} berhasil ditambahkan:")
+        print("=" * (19 + len(nama_barang)))
+        print(produk_baru.to_string(index=False))
+        print("=" * (19 + len(nama_barang)))
         break
 
-    print("Pilih jenis Alat:")
-    pilihan_jenis = [["1", "Fragile"], ["2", "Unfragile"]]
-    headers = ["No", "Jenis"]
-    print(tabulate(pilihan_jenis, headers=headers, tablefmt="fancy_grid"))
-    
-    while True:
-        if judul == 'Alat':
-            jenis = input(f"Masukkan Jenis Alat: ")
-            match jenis :
-                case "1":
-                    jenis = "fragile"
-                    break
-                case "2":
-                    jenis = "unragile"
-                    break
-                case _ :
-                    print(f"Pilihan tidak ada.")
-                    input("Tekan Enter untuk mencoba kembali")
-                    log.clear_alert(3)
-                    continue
+#codingan mas pur
+# def tambah_barang(file,judul):
+#         # Membaca data dari produk.csv
+#         data = log.cek_file(file)
+#         log.clear_terminal()
+#         print(f"==== Tambah {judul} ====")
+#         while True:
+#             # Validasi: Cek apakah nama produk sudah ada
+#             nama_barang = input_barang(f"Masukkan nama {judul} baru: ").strip().lower()
+#             while nama_barang in data['nama'].str.lower().values:
+#                 print(f"Nama {judul} sudah ada. Silakan gunakan nama lain.")
+#                 input("Tekan Enter untuk mencoba kembali")
+#                 log.clear_alert(3)
+#                 nama_barang = input_barang(f"Masukkan nama {judul} baru: ").strip().lower()
 
-        elif judul == 'Bahan' :
-            jenis = input(f"Masukkan Jenis Alat: ")
-            match jenis :
-                case "1":
-                    jenis = "padat"
-                    break
-                case "2":
-                    jenis = "cair"
-                    break
-                case "3":
-                    jenis = "gas"
-                    break
-                case _ :
-                    print(f"Pilihan tidak ada.")
-                    input("Tekan Enter untuk mencoba kembali")
-                    log.clear_alert(3)
-                    continue
- 
-    stok = input_int(f"Masukkan stok {judul}: ")
-    
-    # Membuat DataFrame produk baru
-    produk_baru = pd.DataFrame([{
-        "id": id_baru,
-        "nama": nama_barang,
-        "jenis": jenis, 
-        "stok": stok,
-        "dipinjam": 0,
-    }])
+#             if judul == 'Alat':
+#                 jenis = input_barang(f"Masukkan jenis {judul} [Fragile/Unfragile]: ").lower()
+#                 while jenis not in ['fragile','unfragile']:
+#                     print(f"Jenis tidak valid. Jenis harus [Fragile/Unfragile]")
+#                     input("Tekan Enter untuk mencoba kembali")
+#                     log.clear_alert(3)
+#                     jenis = input_barang(f"Masukkan jenis {judul} [Fragile/Unfragile]: ")
 
-    while True:
-        log.clear_terminal()
-        print("\nRingkasan Barang:")
-        print("-" * 24)
-        print(f"ID {judul}\t:{id_baru}")
-        print(f"Nama {judul}\t:{nama_barang}")
-        print(f"Jenis\t\t:{jenis}")
-        print(f"Stok\t\t:{stok}")
-        print("-" * 24)
-        print(" [1] Selasai")
-        print(" [2] Ulangi")
-        print(" [3] Batal")
-        print("-" * 24)
-        
-        lanjutkan = input("Pilih Menu [1/2/3]: ")
-        match lanjutkan:
-            case "1":
-                data_baru = pd.concat([data, produk_baru])
-                data_baru.to_csv(file, index=False)
-                log.clear_terminal()
-                print(f"==== Registrasi {judul} Berhasil ====")
-                print("-" * 24)
-                print(f"ID {judul}:\t{id_baru}")
-                print(f"Nama {judul}:\t{nama_barang}")
-                print(f"Jenis:\t\t{jenis}")
-                print(f"Stok:\t\t{stok}")
-                print("-" * 24)
-                input("Tekan Enter untuk kembali")
-                return  # Menyelesaikan fungsi setelah pinjam berhasil
-            
-            case "2":
-                tambah_barang(file,judul)
-                return
-            
-            case "3":
-                print("=" * 24)
-                print("==== Operasi Dibatalkan ====")
-                input("Tekan Enter untuk kembali")
-                break  # Keluar dari fungsi jika pinjam dibatalkan
-            
-            case _:
-                print("Pilihan Tidak Ada")
-                input("Tekan Enter untuk mencoba kembali")
-                log.clear_alert(3)
-                continue
-            
+#             elif judul == 'Bahan' :
+#                 jenis = input_barang(f"Masukkan jenis {judul} [Padat,Cair,Gas]: ").lower()
+#                 while jenis not in ['padat','cair','gas']:
+#                     print(f"Jenis tidak valid. Jenis harus [Padat/Cair/Gas]")
+#                     input("Tekan Enter untuk mencoba kembali")
+#                     log.clear_alert(3)
+#                     jenis = input_barang(f"Masukkan jenis {judul} [Padat,Cair,Gas]: ")
+
+#             stok = input_int(f"Masukkan stok {judul}: ")
+#             # if not data.empty:
+#             if len(data)>0:
+#                 # id_baru = data['id'].max() + 1
+#                 id_baru = data.iloc[-1]["id"]+1
+#             else:
+#                 id_baru = 1
+#             # Membuat DataFrame produk baru
+#             produk_baru = pd.DataFrame([{
+#                 "id": id_baru,
+#                 "nama": nama_barang,
+#                 "jenis": jenis, 
+#                 "stok": stok,
+#                 "dipinjam": 0,
+#             }])
+#             # Menggabungkan produk baru dengan DataFrame lama
+#             data_baru = pd.concat([data, produk_baru])
+#             data_baru.to_csv(file, index=False)
+#             # headers = ["id","nama","jenis","stok","dipinjam"]
+#             # print(tabulate (data_baru, headers=headers, tablefmt="fancy_grid"))
+#             print(f"\n{judul} berhasil ditambahkan:")
+#             print("="*(19+len(nama_barang)))
+#             print(produk_baru.to_string(index=False))
+#             print("="*(19+len(nama_barang)))
+#             break
 
 #================================================================================================
 # FITUR EDIT UTAMA [Tidak Dipakai]
@@ -510,7 +517,7 @@ def edit_produk(file,judul):
                     data.loc[data['id'] == id_barang, 'jenis'] = jenis_baru
 
                 elif judul == 'Bahan':
-                    jenis_baru = input_barang(f"Jenis {judul} baru [Padat,Cair,Gas]: ")
+                    jenis_baru = input_barang(f"Jenis {judul} baru [Padat,Cair,Gas]: ").lower()
                     while jenis_baru not in ['padat','cair','gas']:
                         print(f"Jenis tidak valid. Jenis harus [Padat/Cair/Gas]")
                         input("Tekan Enter untuk mencoba kembali")
@@ -599,7 +606,7 @@ def edit_jenis(file,judul):
 
             # Meminta input untuk memperbarui jenis barang
             if judul == 'Alat':
-                jenis_baru = input_barang(f"Jenis {judul} baru [Fragile/Unfragile]: ")
+                jenis_baru = input_barang(f"Jenis {judul} baru [Fragile/Unfragile]: ").lower()
                 while jenis_baru not in ['fragile','unfragile']:
                     print(f"Jenis tidak valid. Jenis harus [Fragile/Unfragile]")
                     input("Tekan Enter untuk mencoba kembali")
@@ -608,7 +615,7 @@ def edit_jenis(file,judul):
                 data.loc[data['id'] == id_barang, 'jenis'] = jenis_baru
             
             elif judul == 'Bahan':
-                jenis_baru = input_barang(f"Jenis {judul} baru [Padat,Cair,Gas]: ")
+                jenis_baru = input_barang(f"Jenis {judul} baru [Padat,Cair,Gas]: ").lower()
                 while jenis_baru not in ['padat','cair','gas']:
                     print(f"Jenis tidak valid. Jenis harus [Padat/Cair/Gas]")
                     input("Tekan Enter untuk mencoba kembali")
@@ -684,7 +691,6 @@ def pinjam_stok(file,judul,id_barang, jumlah_pinjam):
     barang.loc[barang['id'] == id_barang, 'dipinjam'] += jumlah_pinjam
     barang.to_csv(file, index=False)
 
-
 def kembali_stok(file,id_barang, jumlah_pinjam):
     barang = log.cek_file(file)
     # Mengurangi stok sesuai jumlah pinjam
@@ -696,20 +702,22 @@ def kembali_stok(file,id_barang, jumlah_pinjam):
 # KELOLA PEMINJAMAN DAN PENGEMBALIAN
 #================================================================================================
 
+
 def tambah_pinjam(file, judul, user):
+    nama, nim, role = user  # user adalah tuple (nama, nim, role)
     barang = tampilan_daftar(file, judul)
     data = log.cek_file("peminjaman.csv")
 
-    if not data.empty:
-    # if len(data) > 0:
+    if len(data) > 0:
         id_pinjam = data.iloc[-1]["id"] + 1
     else:
         id_pinjam = 1
 
-    if user['role'] == 'admin':
+    print("=" * 32)
+    if role == 'admin':
         # Admin dapat memasukkan nama dan NIM untuk pengguna
-        user['nama'] = log.input_nama("Nama Peminjam: ")
-        user['nim'] = log.input_nim("NIM: ")
+        nama = log.input_nama("Nama: ")
+        nim = log.input_nim("NIM: ")
         log.clear_alert(2)
 
     while True:
@@ -759,14 +767,13 @@ def tambah_pinjam(file, judul, user):
     # Membuat dictionary untuk menyimpan data pinjaman
     data_pinjam = {
         "id": id_pinjam,               # ID pinjaman yang dihasilkan sebelumnya
-        "nim": user['nim'],                    # NIM pengguna yang meminjam
-        "nama": user['nama'],                  # Nama pengguna
+        "nim": nim,                    # NIM pengguna yang meminjam
+        "nama": nama,                  # Nama pengguna
         "kategori": judul.lower(),     # Kategori barang (judul yang diubah menjadi huruf kecil)
         "id_barang": id_barang,        # ID barang yang dipinjam
         "barang": item,                # Nama barang yang dipinjam
         "jenis": item_jenis,           # Jenis barang yang dipinjam
-        "jml_pinjam": jml,             # Jumlah barang yang dipinjam
-        "jml_kembali": 0,            # Jumlah barang yang kembali (0 karena masih dipinjam)
+        "jumlah": jml,                 # Jumlah barang yang dipinjam
         "tgl_pinjam": tgl_pinjam,      # Tanggal pinjam
         "tgl_kembali": "-",            # Tanggal kembali (belum ada karena masih dipinjam)
         "tenggat": tenggat,            # Tenggat waktu pengembalian
@@ -780,11 +787,11 @@ def tambah_pinjam(file, judul, user):
         log.clear_terminal()
         print("\nRingkasan Barang:")
         print("-" * 24)
-        print(f"Barang\t:{item}")
-        print(f"Jenis\t:{item_jenis}")
-        print(f"Jumlah\t:{jml}")
-        print(f"\nTanggal Pinjam\t:{tgl_pinjam}")
-        print(f"Waktu Tenggat\t:{tenggat}")
+        print(f"Barang:\t{item}")
+        print(f"Jenis:\t{item_jenis}")
+        print(f"Jumlah:\t{jml}")
+        print(f"\nTanggal Pinjam:\t{tgl_pinjam}")
+        print(f"Waktu Tenggat:\t{tenggat}")
         print("-" * 24)
         print(" [1] Ganti Barang")
         print(" [2] Edit Jumlah")
@@ -793,7 +800,7 @@ def tambah_pinjam(file, judul, user):
         print(" [5] Batal")
         print("-" * 24)
         
-        lanjutkan = input("Pilih Menu [1-5]: ")
+        lanjutkan = input("Pilih Menu [1/2/3/4/5]: ")
         match lanjutkan:
             case "1":
                 while True:
@@ -849,7 +856,8 @@ def tambah_pinjam(file, judul, user):
                         input("Tekan Enter untuk mencoba lagi.")
                         log.clear_alert(3)
                     else:
-                        df["jml_pinjam"] = jml_baru
+                        jml = jml_baru
+                        df["jumlah"] = jml
                         print("-"*24)
                         print("Jumlah Barang Berhasil Diganti")
                         input("Tekan Enter untuk melanjutkan")
@@ -875,6 +883,7 @@ def tambah_pinjam(file, judul, user):
                         log.clear_terminal()
                         break
 
+
             case "4":
                 pinjam_stok(file, judul, id_barang, jml)
                 data_baru = pd.concat([data, df])
@@ -883,8 +892,8 @@ def tambah_pinjam(file, judul, user):
                 print("==== Peminjaman Berhasil ====")
                 print("Bukti Peminjaman:")
                 print("-" * 24)
-                print(f"Nama:\t{user['nama']}")
-                print(f"NIM:\t{user['nim']}\n")
+                print(f"Nama:\t{nama}")
+                print(f"NIM:\t{nim}\n")
                 print(f"Barang:\t{item}")
                 print(f"Jenis:\t{item_jenis}")
                 print(f"Jumlah:\t{jml}")
@@ -905,102 +914,93 @@ def tambah_pinjam(file, judul, user):
                 continue
         
 
-def kembali_pinjam(file, judul, user):
+def kembali_pinjam(file,judul, user):
     # Baca data peminjaman
-    data = log.cek_file("peminjaman.csv")
+    data_peminjaman = log.cek_file("peminjaman.csv")
+    nama, nim, role = user
     kategori = judul.lower()
 
-    # Filter data peminjaman berdasarkan kategori dan status yang relevan
-    filter_kondisi = (
-        (data['kategori'] == kategori) &
-        ((data['status'] == 'dipinjam') | (data['status'] == 'overdue')))
+
+    # Filter data peminjaman berdasarkan nim, kategori dan status
+    pinjaman_aktif = data_peminjaman[
+        (data_peminjaman['nim'] == nim) &
+        (data_peminjaman['kategori'] == kategori) &
+        ((data_peminjaman['status'] == 'dipinjam') | (data_peminjaman['status'] == 'overdue'))
+        ]
     
-    if user['role'] == 'admin':
-        pinjaman = data[filter_kondisi]
-    elif user['role'] == 'mahasiswa':
-        pinjaman = data[filter_kondisi & (data['nim'] == user['nim'])]
-    
-    # Tampilkan data pinjaman yang relevan
-    if pinjaman.empty:
+    if len(pinjaman_aktif) < 1:
         print(f"Tidak ada {judul} yang sedang dipinjam.")
         return
-    
-    print(f"\n======== {judul} yang Sedang Dipinjam ========")
-    print(tabulate(pinjaman[['id','nama','nim', 'barang', 'jml_pinjam', 'tgl_pinjam', 'tenggat']], 
-               headers=['ID','Nama','NIM','Barang', 'Jumlah', 'Tanggal Pinjam', 'Tenggat'],
-               tablefmt="fancy_grid", showindex=False))
+    log.clear_terminal()
+    pinjaman_aktif.index = range(1, len(pinjaman_aktif) + 1)
 
-    # Memilih ID pinjaman yang ingin dikembalikan
+    print(f"======== {judul} yang Sedang Dipinjam ========")
+    print(tabulate(pinjaman_aktif[['id', 'barang', 'jumlah', 'tgl_pinjam', 'tenggat']], 
+                   headers=['ID', 'Barang', 'Jumlah', 'Tanggal Pinjam', 'Tenggat'],
+                   tablefmt="fancy_grid", showindex=False))
+    
+    # Meminta pengguna memilih ID peminjaman untuk dikembalikan
     id_pinjam = input_int(f"Masukkan ID {judul} yang ingin dikembalikan: ")
-    if id_pinjam not in pinjaman['id'].values:
+    
+    # Validasi jika ID barang ada dalam daftar pinjaman
+    if id_pinjam not in pinjaman_aktif['id'].values:
         print(f"ID {judul} tidak valid.")
         return
-
-    # Mengambil baris data peminjaman yang dipilih
-    id_terpilih = pinjaman.loc[pinjaman['id'] == id_pinjam]
-    print(f"\n==== Data {judul} yang akan dikembalikan ====")
-    print(tabulate(id_terpilih[['id','barang','jml_pinjam', 'jml_kembali']], 
-           headers=['ID','Barang', 'Jumlah Pinjam', 'Jumlah Kembali'],
-           tablefmt="fancy_grid", showindex=False))
-
-    # Meminta jumlah barang yang dikembalikan
-    while True:
-        jml_kembali = input_int(f"Banyak {judul} yang dikembalikan: ")
-        total_kembali = jml_kembali + id_terpilih.iloc[0]['jml_kembali']
-        
-        if total_kembali > id_terpilih.iloc[0]["jml_pinjam"]:
-            print("Barang yang dikembalikan melebihi jumlah pinjam.")
-            input("Tekan Enter untuk melanjutkan")
-            log.clear_alert(3)
-        # elif jml_kembali < 1:
-        #     print("Minimal barang yang dikembalikan adalah 1.")
-        #     input("Tekan Enter untuk melanjutkan")
-        #     log.clear_alert(3)
-
-        else:
-            # Update jumlah barang yang dikembalikan
-            data.loc[data['id'] == id_pinjam, 'jml_kembali'] = total_kembali
-            # Perbarui status peminjaman
-            data.loc[data['id'] == id_pinjam, 'status'] = 'selesai' if total_kembali == id_terpilih.iloc[0]["jml_pinjam"] else 'dipinjam'
-            break
-
-    # Update stok barang yang dikembalikan dan tanggal kembali
-    kembali_stok(file, id_terpilih.iloc[0]['id_barang'], jml_kembali)
-    data.loc[data['id'] == id_pinjam, 'tgl_kembali'] = date.today()
-
+    
+    barang_kembali = pinjaman_aktif[pinjaman_aktif['id'] == id_pinjam].iloc[0]
+    
+     # Update tgl_kembali dengan tanggal hari ini
+    data_peminjaman.loc[data_peminjaman['id'] == id_pinjam, 'tgl_kembali'] = date.today()
+    # Ubah status menjadi 'selesai'
+    data_peminjaman.loc[data_peminjaman['id'] == id_pinjam, 'status'] = 'selesai'
+    
+    # Update kembali_stok
+    kembali_stok(file,  barang_kembali['id_barang'], barang_kembali['jumlah'])
+    
     # Simpan perubahan ke file peminjaman.csv
-    data.to_csv("peminjaman.csv", index=False)
+    data_peminjaman.to_csv("peminjaman.csv", index=False)
     print(f"\n{judul} berhasil dikembalikan dan stok telah diperbarui.")
 
 
-def sedang_dipinjam(user):
+def dipinjam_user(user):
+    log.clear_terminal()
+    data = log.cek_file('peminjaman.csv')
+    nama, nim, role = user
+    hasil_cari = data[(data['nim'] == nim) & 
+                     (data['status'] == 'dipinjam') | (data['status'] == 'overdue')]
+    print(f"-"*32)
+    print(f"- Hari Ini Tanggal: {date.today()} -")
+    print(f"-"*32)
+    print(f"====================== Daftar Barang Pinjaman ======================")
+    if len(hasil_cari) > 0:
+        print(tabulate(hasil_cari[['kategori', 'barang', 'jumlah', 'tenggat', 'status']].values, 
+                       headers=['Kategori', 'Barang', 'Jumlah', 'Tenggat', 'Status'], 
+                       tablefmt="fancy_grid", numalign="center", stralign="left"))
+    else:
+        print("-" * 52)
+        print("Tidak ada riwayat peminjaman ditemukan.")
+
+    input("Tekan Enter untuk kembali ke menu")
+    log.clear_terminal()
+
+
+def dipinjam_admin():
     log.clear_terminal()
     data = log.cek_file('peminjaman.csv')
 
-    filter_kondisi = (
-        (data['status'] == 'dipinjam') | (data['status'] == 'overdue'))
+    print(f"================ Data Peminjaman ================")
     
-    if user['role'] == 'admin':
-        pinjaman = data[filter_kondisi]
-    elif user['role'] == 'mahasiswa':
-        pinjaman = data[filter_kondisi & (data['nim'] == user['nim'])]
-
-    print(f"======== Barang yang Sedang Dipinjam ========")
-    if pinjaman.empty:
-       print(f"Tidak ada barang yang sedang dipinjam.")
-       input("Tekan Enter untuk kembali")
-       log.clear_terminal()
-       return
+    hasil_cari = data[(data['status'] == 'dipinjam') | (data['status'] == 'overdue')]
     
-    if user['role'] == 'mahasiswa' :
-        isi  = pinjaman[['id', 'barang', 'jml_pinjam', 'tgl_pinjam', 'tenggat']] 
-        headers = ['ID', 'Barang', 'Pinjam', 'Tgl Pinjam', 'Deadline'] 
-    elif user['role'] == 'admin' :
-        isi = pinjaman[['id', 'nama', 'nim', 'barang', 'jml_pinjam', 'tgl_pinjam','tenggat']]
-        headers = ['ID','Nama' ,'NIM','Barang', 'Pinjam', 'Tgl Pinjam', 'Deadline'] 
+    if len(hasil_cari) > 0:
+        print(tabulate(hasil_cari[['id', 'barang', 'jumlah', 'tgl_pinjam', 'tenggat', 'status']], 
+                       headers=['ID', 'Barang', 'Jumlah', 'Tanggal Pinjam', 'Tenggat', 'Status'],
+                       tablefmt="fancy_grid", showindex=False))
+    else:
+        print("-" * 52)
+        print("Tidak ada barang yang sedang dipinjam.")
         
-    print(tabulate (isi, headers, tablefmt="fancy_grid",showindex=False))
-    input("\nTekan Enter untuk kembali ke menu.")
+    input("Tekan Enter untuk kembali ke menu")
     log.clear_terminal()
 
 #================================================================================================
@@ -1011,15 +1011,16 @@ def history_user(file, user, judul):
     log.clear_terminal()
     data = log.cek_file(file)
     
+    nama, nim, role = user
     kategori = judul.lower()
     print(f"================ Riwayat Peminjaman {judul} ================")
     
-    hasil_cari = data[(data['nim'] == user['nim']) & (data['kategori'] == kategori)]
+    hasil_cari = data[(data['nim'] == nim) & (data['kategori'] == kategori)]
     
-    if not hasil_cari.empty:
-        print(tabulate(hasil_cari[['id','barang','jml_pinjam', 'jml_kembali','tgl_pinjam','tenggat','status']], 
-            headers=['ID','Barang', 'Pinjam', 'Kembali', 'Tgl Pinjam','Deadline','Status'],
-            tablefmt="fancy_grid", showindex=False))
+    if len(hasil_cari) > 0:
+          print(tabulate(hasil_cari[['id', 'barang', 'jumlah', 'tgl_pinjam', 'tenggat', 'status']], 
+                       headers=['ID', 'Barang', 'Jumlah', 'Tanggal Pinjam', 'Tenggat', 'Status'],
+                       tablefmt="fancy_grid", showindex=False))
     else:
         print("-" * 52)
         print("Tidak ada riwayat peminjaman ditemukan.")
@@ -1029,10 +1030,12 @@ def history_admin():
     data = log.cek_file('peminjaman.csv')
 
     print(f"================ Riwayat Peminjaman ================")
+    
+    
     if len(data) > 0:
-        print(tabulate(data[['id','nama','nim','barang','jml_pinjam', 'jml_kembali','tgl_pinjam','status']], 
-           headers=['ID','Nama','NIM','Barang', 'Pinjam', 'Kembali', 'Tgl Pinjam','Status'],
-           tablefmt="fancy_grid", showindex=False))
+        print(tabulate(data[['id', 'barang', 'jumlah', 'tgl_pinjam', 'tenggat', 'status']], 
+                       headers=['ID', 'Barang', 'Jumlah', 'Tanggal Pinjam', 'Tenggat', 'Status'],
+                       tablefmt="fancy_grid", showindex=False))
     else:
         print("-" * 52)
         print("Tidak ada riwayat peminjaman ditemukan.")

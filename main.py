@@ -1,11 +1,12 @@
 import login as log
+# import db_randika as db
 import dashboard as db
 
 def main():
     db.update_status()
     while True:
         log.menu_login()
-        pilihan = input("Pilih Menu [1,2,3]: ")
+        pilihan = input("Pilih Menu [1-3]: ")
         match pilihan:
             case "1":
                 user = log.login()
