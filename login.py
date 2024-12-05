@@ -47,6 +47,17 @@ def input_nama(kata):
             input("Tekan Enter untuk mencoba kembali.")
             clear_alert(3)
 
+def input_pw(kata):
+    while True:
+        nama = input(f"{kata}").strip()
+        # Memeriksa apakah inputan nama kosong atau tidak 
+        if nama:
+            return nama
+        else:
+            print("Input tidak boleh kosong")
+            input("Tekan Enter untuk mencoba kembali.")
+            clear_alert(3)
+
 
 def input_nim(kata):
     while True:
@@ -77,13 +88,11 @@ def login():
         clear_terminal()
         print("==== Login ====")
         nim = input_nim("NIM: ")
-        password = input("Password: ").strip()
-        
+        password = input_pw("Password: ").strip()
+
         user = data[
             (data['nim'] == nim) & 
             (data['password'] == password)]
-
-
         if not user.empty:
             user_login = {
                 "nama" : user.iloc[0]['nama'],
@@ -95,9 +104,7 @@ def login():
             print("="*(36+len(user_login["nama"])))
             print(f"= Login berhasil! Selamat datang, {user_login['nama']} =")
             print("="*(36+len(user_login["nama"])))
-
             return user_login
-
         else:
             print("\nNIM atau Password salah. Silakan coba lagi.")
             input("Tekan Enter untuk melanjutkan.\n")
@@ -106,11 +113,9 @@ def login():
 
 def register():
     users = cek_file("users.csv")
-
     while True:
         clear_terminal()
         print("=== Registrasi Anggota Baru ===")
-
         nama = input_nama("Nama: ")
         nim = input_nim("NIM: ")
         # Cek apakah username sudah digunakan
@@ -119,9 +124,7 @@ def register():
             input("Tekan Enter untuk mencoba kembali.")
             clear_alert(3)
             nim = input_nim("NIM: ")
-
-        password = input("Masukkan password: ").strip()
-
+        password = input_pw("Masukkan password: ").strip()
         print("-" * 26)
         print("Apakah data sudah benar: ")
         print(" [1] Konfirmasi")
@@ -139,10 +142,8 @@ def register():
                         'password': password,
                         'role': 'mahasiswa'
                     }])
-
                     # Tambahkan data pengguna baru ke dalam DataFrame users
                     users = pd.concat([users, user_baru])
-
                     # Simpan DataFrame ke dalam 'users.csv'
                     users.to_csv("users.csv", index=False)
 
@@ -177,28 +178,6 @@ def logout():
     else:
         print("Anda belum login.")
         input("Tekan Enter untuk melanjutkan.")
-
-#================================================================================================
-# NAVIGASI [Tidak Dipakai]
-#================================================================================================
-
-def pil_menu():
-    while True:
-        pilihan = input("Pilih Menu [1-3]: ")
-        match pilihan:
-            case "1":
-                login()
-                return pilihan
-            case "2":
-                register()
-                return pilihan
-            case "3":
-                print("Terima Kasih")
-                return pilihan
-            case _: 
-                print("Pilihan tidak ada")
-                input("Tekan Enter untuk mencoba kembali")
-                clear_alert(3)
 
 #================================================================================================
 # Tampilan Menu Login Page

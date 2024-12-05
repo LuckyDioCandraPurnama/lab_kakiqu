@@ -1,5 +1,4 @@
 import login as log
-# import db_randika as db
 import dashboard as db
 
 def main():

@@ -322,32 +322,24 @@ def menu_history(user):
 #================================================================================================
 
 def tampilan_daftar(file,judul):
-    # Membaca file CSV ke dalam DataFrame
     log.clear_terminal()
     data = log.cek_file(file)
 
     # Konversi DataFrame ke daftar untuk digunakan dengan tabulate
     data_list = data.values.tolist()
     headers = data.columns.tolist()
-
     print(f"======== Daftar {judul} ========")
-    print(tabulate(data_list, headers=headers, tablefmt="fancy_grid"))  # Gunakan tabulate untuk mencetak tabel
-
-    return data
+    print(tabulate(data_list, headers=headers, tablefmt="fancy_grid"))
 
 
 def cari_barang(file,judul):
     log.clear_terminal()
     data = log.cek_file(file)
-
     print(f"\n==== Cari {judul} ====")
     nama_barang = input_barang(f"Nama {judul}: ")
-
     # Filter data berdasarkan input nama produk (case-insensitive)
     hasil_cari = data[data['nama'].str.lower().str.contains(nama_barang.lower())]
-    
     print("\n=== Hasil Pencarian ===")
-
     if not hasil_cari.empty:
         hasil_cari_list = hasil_cari[['id', 'nama', 'jenis', 'stok','dipinjam']].values.tolist()
         headers = ['ID', 'Nama', 'Jenis', 'Stok','Dipinjam']
@@ -359,15 +351,11 @@ def cari_barang(file,judul):
 
 def tambah_barang(file,judul):
     log.clear_terminal()
-    # Membaca data dari produk.csv
     data = log.cek_file(file)
     if not data.empty:
-    # if len(data)>0:
-        # id_baru = data['id'].max() + 1
         id_baru = data.iloc[-1]["id"]+1
     else:
-        id_baru = 1
-        
+        id_baru = 1 
     print(f"==== Tambah {judul} ====")
     while True:
         # Validasi: Cek apakah nama produk sudah ada
@@ -378,12 +366,10 @@ def tambah_barang(file,judul):
             log.clear_alert(3)
             nama_barang = input_barang(f"Masukkan nama {judul} baru: ")
         break
-
     print("Pilih jenis Alat:")
     pilihan_jenis = [["1", "Fragile"], ["2", "Unfragile"]]
     headers = ["No", "Jenis"]
     print(tabulate(pilihan_jenis, headers=headers, tablefmt="fancy_grid"))
-    
     while True:
         if judul == 'Alat':
             jenis = input(f"Masukkan Jenis Alat: ")
@@ -399,7 +385,6 @@ def tambah_barang(file,judul):
                     input("Tekan Enter untuk mencoba kembali")
                     log.clear_alert(3)
                     continue
-
         elif judul == 'Bahan' :
             jenis = input(f"Masukkan Jenis Alat: ")
             match jenis :
@@ -417,9 +402,7 @@ def tambah_barang(file,judul):
                     input("Tekan Enter untuk mencoba kembali")
                     log.clear_alert(3)
                     continue
- 
     stok = input_int(f"Masukkan stok {judul}: ")
-    
     # Membuat DataFrame produk baru
     produk_baru = pd.DataFrame([{
         "id": id_baru,
@@ -428,7 +411,6 @@ def tambah_barang(file,judul):
         "stok": stok,
         "dipinjam": 0,
     }])
-
     while True:
         log.clear_terminal()
         print("\nRingkasan Barang:")
@@ -442,7 +424,6 @@ def tambah_barang(file,judul):
         print(" [2] Ulangi")
         print(" [3] Batal")
         print("-" * 24)
-        
         lanjutkan = input("Pilih Menu [1/2/3]: ")
         match lanjutkan:
             case "1":
@@ -475,70 +456,6 @@ def tambah_barang(file,judul):
                 log.clear_alert(3)
                 continue
             
-
-#================================================================================================
-# FITUR EDIT UTAMA [Tidak Dipakai]
-#================================================================================================
-
-def edit_produk(file,judul):
-    data = log.cek_file(file)
-    while True:
-            id_barang = input(f"Masukkan ID {judul} yang ingin diedit: ").strip()
-        
-            id_barang = int(id_barang)
-            # Cek apakah ID produk ada dalam data
-            if id_barang in data['id'].values:
-                # Mengambil baris produk berdasarkan ID
-                hasil_cari = data[data['id'] == id_barang]
-                print(f"\nData {judul} yang akan diedit:")
-                print("="*30)
-                print(hasil_cari[['id', 'nama','jenis', 'stok']].to_string(index=False))
-                print("="*30)
-
-                # Meminta input untuk memperbarui nama barang
-                nama_baru = input_barang(f"Nama {judul} baru: ")
-                data.loc[data['id'] == id_barang, 'nama'] = nama_baru
-
-                # Meminta input untuk memperbarui jenis barang
-                if judul == 'Alat':
-                    jenis_baru = input_barang(f"Jenis {judul} baru [Fragile/Unfragile]: ").lower()
-                    while jenis_baru not in ['fragile','unfragile']:
-                        print(f"Jenis tidak valid. Jenis harus [Fragile/Unfragile]")
-                        input("Tekan Enter untuk mencoba kembali")
-                        log.clear_alert(3)
-                        jenis_baru = input_barang(f"Masukkan jenis {judul} [Fragile/Unfragile]: ")
-                    data.loc[data['id'] == id_barang, 'jenis'] = jenis_baru
-
-                elif judul == 'Bahan':
-                    jenis_baru = input_barang(f"Jenis {judul} baru [Padat,Cair,Gas]: ")
-                    while jenis_baru not in ['padat','cair','gas']:
-                        print(f"Jenis tidak valid. Jenis harus [Padat/Cair/Gas]")
-                        input("Tekan Enter untuk mencoba kembali")
-                        log.clear_alert(3)
-                        jenis_baru = input_barang(f"Masukkan jenis {judul} [Padat,Cair,Gas]: ")
-                    data.loc[data['id'] == id_barang, 'jenis'] = jenis_baru
-
-                # Meminta input untuk memperbarui stok barang
-                stok_baru = input_int(f"Stok {judul} baru: ")
-                data.loc[data['id'] == id_barang, 'stok'] = stok_baru
-
-                # Menyimpan data yang telah diperbarui ke produk.csv
-                data.to_csv(file, index=False)
-                print("\nData produk berhasil diperbarui:")
-                print("="*30)
-
-                # Menampilkan data yang telah diperbarui 
-                data = log.cek_file(file)
-                hasil_cari = data[data['id'] == id_barang]
-                print(hasil_cari[['id', 'nama','jenis', 'stok']].to_string(index=False))
-                print("="*30)
-                break
-
-            else:
-                print(f"ID {judul} tidak ditemukan.")
-                input("Tekan Enter untuk mencoba kembali.")
-                log.clear_alert(3)
-
 #================================================================================================
 # FITUR SUB EDIT
 #================================================================================================
