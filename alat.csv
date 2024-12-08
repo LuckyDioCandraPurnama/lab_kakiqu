@@ -2,7 +2,7 @@ id,nama,jenis,stok,dipinjam
 1,sarung tangan,unfragile,20,0
 2,apron lab,unfragile,20,0
 3,safety shield,unfragile,20,0
-4,pembakar bunsen,unfragile,5,0
+4,kompor bunsen,fragile,10,0
 5,sendok takar,unfragile,15,0
 6,mikroskop,fragile,3,0
 7,tabung reaksi,fragile,20,0

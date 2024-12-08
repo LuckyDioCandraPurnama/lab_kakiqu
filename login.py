@@ -24,8 +24,8 @@ def cek_file(file):
         sys.exit()
 
 def input_nama(kata):
-    sesuai = True
     while True:
+        sesuai = True
         nama = input(f"{kata}").strip()
         # Memeriksa apakah inputan nama kosong atau tidak 
         if nama :

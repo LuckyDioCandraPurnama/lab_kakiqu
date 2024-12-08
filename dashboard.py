@@ -204,22 +204,19 @@ def sub_menu_update_barang(file, judul):
     while True:
         log.clear_terminal()
         print(f"=== Pilih Update {judul} ===")
-        daftar =[["[1]", "Edit Nama",{judul}],
+        daftar =[["[1]", "Edit Nama"],
           ["[2]", "Edit Jenis"],
-          ["[3]", "Edut Stock"],
+          ["[3]", "Edit Stock"],
           ["[4]", "Kembali"]]
         headers = ["No","Menu"]
         print(tabulate(daftar, headers=headers, tablefmt="fancy_grid"))
-        sub_pilihan = input("Pilih Menu [1/2/3/4]: ")
+        sub_pilihan = input("Pilih Menu [1-4]: ")
         match sub_pilihan:
             case "1":
-                tampilan_daftar(file,judul)
                 edit_nama(file,judul)
             case "2":
-                tampilan_daftar(file,judul)
                 edit_jenis(file,judul)
             case "3":
-                tampilan_daftar(file,judul)
                 edit_stok(file,judul)
             case "4":
                 log.clear_terminal()
@@ -330,6 +327,7 @@ def tampilan_daftar(file,judul):
     headers = data.columns.tolist()
     print(f"======== Daftar {judul} ========")
     print(tabulate(data_list, headers=headers, tablefmt="fancy_grid"))
+    return data
 
 
 def cari_barang(file,judul):
@@ -366,13 +364,14 @@ def tambah_barang(file,judul):
             log.clear_alert(3)
             nama_barang = input_barang(f"Masukkan nama {judul} baru: ")
         break
-    print("Pilih jenis Alat:")
-    pilihan_jenis = [["1", "Fragile"], ["2", "Unfragile"]]
     headers = ["No", "Jenis"]
-    print(tabulate(pilihan_jenis, headers=headers, tablefmt="fancy_grid"))
-    while True:
-        if judul == 'Alat':
-            jenis = input(f"Masukkan Jenis Alat: ")
+    
+    if judul == 'Alat':
+        print(f"Pilih jenis {judul}:")
+        pilihan_jenis = [["1", "Fragile"], ["2", "Unfragile"]]
+        print(tabulate(pilihan_jenis, headers=headers, tablefmt="fancy_grid"))
+        while True:
+            jenis = input(f"Masukkan Jenis {judul}: ")
             match jenis :
                 case "1":
                     jenis = "fragile"
@@ -385,8 +384,12 @@ def tambah_barang(file,judul):
                     input("Tekan Enter untuk mencoba kembali")
                     log.clear_alert(3)
                     continue
-        elif judul == 'Bahan' :
-            jenis = input(f"Masukkan Jenis Alat: ")
+    elif judul == 'Bahan' :
+        print(f"Pilih jenis {judul}:")
+        pilihan_jenis = [["1", "Padat"], ["2", "Cair"],["3", "Gas"]]
+        print(tabulate(pilihan_jenis, headers=headers, tablefmt="fancy_grid"))
+        while True:
+            jenis = input(f"Masukkan Jenis {judul}: ")
             match jenis :
                 case "1":
                     jenis = "padat"
@@ -402,6 +405,7 @@ def tambah_barang(file,judul):
                     input("Tekan Enter untuk mencoba kembali")
                     log.clear_alert(3)
                     continue
+
     stok = input_int(f"Masukkan stok {judul}: ")
     # Membuat DataFrame produk baru
     produk_baru = pd.DataFrame([{
@@ -424,7 +428,7 @@ def tambah_barang(file,judul):
         print(" [2] Ulangi")
         print(" [3] Batal")
         print("-" * 24)
-        lanjutkan = input("Pilih Menu [1/2/3]: ")
+        lanjutkan = input("Pilih Menu [1-3]: ")
         match lanjutkan:
             case "1":
                 data_baru = pd.concat([data, produk_baru])
@@ -461,8 +465,9 @@ def tambah_barang(file,judul):
 #================================================================================================
 
 def edit_nama(file,judul):
+    log.clear_terminal()
     data = log.cek_file(file)
-    print("="*30)
+    tampilan_daftar(file,judul)
 
     while True:
         id_barang = input_int(f"Masukkan ID {judul} yang ingin diedit: ")
@@ -471,36 +476,69 @@ def edit_nama(file,judul):
         if id_barang in data['id'].values:
             # Mengambil baris produk berdasarkan ID
             hasil_cari = data[data['id'] == id_barang]
-            print(f"\nData {judul} yang akan diedit:")
-            print("="*30)
-            print(hasil_cari[['id', 'nama','jenis', 'stok']].to_string(index=False))
-            print("="*30)
+            nama_lama = hasil_cari.iloc[0]['nama']
+            jenis = hasil_cari.iloc[0]['jenis']
+            stok = hasil_cari.iloc[0]['stok']
 
+            print(f"\nData {judul} yang akan diedit:")
+            print(tabulate(hasil_cari[['id', 'nama','jenis', 'stok']],
+                           headers=['ID','Nama','Jenis','Stok'],
+                           tablefmt="fancy_grid", showindex=False))
             # Meminta input untuk memperbarui nama barang
             nama_baru = input_barang(f"Nama {judul} baru: ")
-            data.loc[data['id'] == id_barang, 'nama'] = nama_baru
 
-            # Menyimpan data yang telah diperbarui ke produk.csv
-            data.to_csv(file, index=False)
-            print("\nData produk berhasil diperbarui:")
-            print("="*30)
+            log.clear_terminal()
+            print("\nRingkasan Barang:")
+            print("-" * 24)
+            print(f"ID {judul}\t:{id_barang}")
+            print(f"Nama Lama\t:{nama_lama}")
+            print(f"Nama Baru\t:{nama_baru}")
+            print("-" * 24)
+            print(" [1] Selasai")
+            print(" [2] Ulangi")
+            print(" [3] Batal")
+            print("-" * 24)
+            lanjutkan = input("Pilih Menu [1-3]: ")
+            match lanjutkan:
+                case "1":
+                    data.loc[data['id'] == id_barang, 'nama'] = nama_baru
+                    data.to_csv(file, index=False)
+                    # Menyimpan data yang telah diperbarui ke produk.csv
 
-            # Menampilkan data yang telah diperbarui 
-            data = log.cek_file(file)
-            hasil_cari = data[data['id'] == id_barang]
-            print(hasil_cari[['id', 'nama','jenis', 'stok']].to_string(index=False))
-            print("="*30)
-            break
-
+                    log.clear_terminal()
+                    print("\n==== Edit Nama Berhasil ====")
+                    print("-" * 24)
+                    print(f"ID {judul}:\t{id_barang}")
+                    print(f"Nama {judul}:\t{nama_baru}")
+                    print(f"Jenis:\t\t{jenis}")
+                    print(f"Stok:\t\t{stok}")
+                    print("-" * 24)
+                    return  # Menyelesaikan fungsi setelah pinjam berhasil
+                case "2":
+                    edit_nama(file,judul)
+                    return
+                case "3":
+                    print("=" * 24)
+                    print("==== Operasi Dibatalkan ====")
+                    # input("Tekan Enter untuk kembali")
+                    break  # Keluar dari fungsi jika pinjam dibatalkan
+                case _:
+                    print("Pilihan Tidak Ada")
+                    input("Tekan Enter untuk mencoba kembali")
+                    log.clear_alert(3)
+                    continue
+        
         else:
             print(f"ID {judul} tidak ditemukan.")
             input("Tekan Enter untuk mencoba kembali.")
             log.clear_alert(3)
+            continue       
 
 
 def edit_jenis(file,judul):
+    log.clear_terminal()
     data = log.cek_file(file)
-    print("="*30)
+    tampilan_daftar(file,judul)
 
     while True:
         id_barang = input_int(f"Masukkan ID {judul} yang ingin diedit: ")
@@ -509,44 +547,98 @@ def edit_jenis(file,judul):
         if id_barang in data['id'].values:
             # Mengambil baris produk berdasarkan ID
             hasil_cari = data[data['id'] == id_barang]
+            jenis_lama = hasil_cari.iloc[0]["jenis"]
+            nama = hasil_cari.iloc[0]['nama']
+            stok = hasil_cari.iloc[0]['stok']
+
             print(f"\nData {judul} yang akan diedit:")
-            print("="*30)
-            print(hasil_cari[['id', 'nama','jenis', 'stok']].to_string(index=False))
-            print("="*30)
+            print(tabulate(hasil_cari[['id', 'nama','jenis', 'stok']],
+                           headers=['ID','Nama','Jenis','Stok'],
+                           tablefmt="fancy_grid", showindex=False))
 
             # Meminta input untuk memperbarui jenis barang
+            headers = ["No", "Jenis"]    
             if judul == 'Alat':
-                jenis_baru = input_barang(f"Jenis {judul} baru [Fragile/Unfragile]: ")
-                while jenis_baru not in ['fragile','unfragile']:
-                    print(f"Jenis tidak valid. Jenis harus [Fragile/Unfragile]")
+                print(f"Pilih jenis {judul}:")
+                pilihan_jenis = [["1", "Fragile"], ["2", "Unfragile"]]
+                print(tabulate(pilihan_jenis, headers, tablefmt="fancy_grid"))
+                while True:
+                    jenis = input(f"Masukkan Jenis {judul}: ")
+                    match jenis :
+                        case "1":
+                            jenis = "fragile"
+                            break
+                        case "2":
+                            jenis = "unragile"
+                            break
+                        case _ :
+                            print(f"Pilihan tidak ada.")
+                            input("Tekan Enter untuk mencoba kembali")
+                            log.clear_alert(3)
+                            continue
+            elif judul == 'Bahan' :
+                print(f"Pilih jenis {judul}:")
+                pilihan_jenis = [["1", "Padat"], ["2", "Cair"],["3", "Gas"]]
+                print(tabulate(pilihan_jenis, headers=headers, tablefmt="fancy_grid"))
+                while True:
+                    jenis = input(f"Masukkan Jenis {judul}: ")
+                    match jenis :
+                        case "1":
+                            jenis = "padat"
+                            break
+                        case "2":
+                            jenis = "cair"
+                            break
+                        case "3":
+                            jenis = "gas"
+                            break
+                        case _ :
+                            print(f"Pilihan tidak ada.")
+                            input("Tekan Enter untuk mencoba kembali")
+                            log.clear_alert(3)
+                            continue
+
+            log.clear_terminal()
+            print("\nRingkasan Barang:")
+            print("-" * 24)
+            print(f"ID {judul}\t:{id_barang}")
+            print(f"Jenis Lama\t:{jenis_lama}")
+            print(f"Jenis Baru\t:{jenis}")
+            print("-" * 24)
+            print(" [1] Selasai")
+            print(" [2] Ulangi")
+            print(" [3] Batal")
+            print("-" * 24)
+            lanjutkan = input("Pilih Menu [1-3]: ")
+            match lanjutkan:
+                case "1":
+                    data.loc[data['id'] == id_barang, 'jenis'] = jenis
+                    data.to_csv(file, index=False)
+                    # Menyimpan data yang telah diperbarui ke produk.csv
+
+                    log.clear_terminal()
+                    print("\n==== Edit Nama Berhasil ====")
+                    print("-" * 24)
+                    print(f"ID {judul}:\t{id_barang}")
+                    print(f"Nama {judul}:\t{nama}")
+                    print(f"Jenis:\t\t{jenis}")
+                    print(f"Stok:\t\t{stok}")
+                    print("-" * 24)
+                    return  # Menyelesaikan fungsi setelah pinjam berhasil
+                case "2":
+                    edit_jenis(file,judul)
+                    return
+                case "3":
+                    print("=" * 24)
+                    print("==== Operasi Dibatalkan ====")
+                    # input("Tekan Enter untuk kembali")
+                    break  # Keluar dari fungsi jika pinjam dibatalkan
+                case _:
+                    print("Pilihan Tidak Ada")
                     input("Tekan Enter untuk mencoba kembali")
                     log.clear_alert(3)
-                    jenis_baru = input_barang(f"Masukkan jenis {judul} [Fragile/Unfragile]: ")
-                data.loc[data['id'] == id_barang, 'jenis'] = jenis_baru
-            
-            elif judul == 'Bahan':
-                jenis_baru = input_barang(f"Jenis {judul} baru [Padat,Cair,Gas]: ")
-                while jenis_baru not in ['padat','cair','gas']:
-                    print(f"Jenis tidak valid. Jenis harus [Padat/Cair/Gas]")
-                    input("Tekan Enter untuk mencoba kembali")
-                    log.clear_alert(3)
-                    jenis_baru = input_barang(f"Masukkan jenis {judul} [Padat,Cair,Gas]: ")
-                data.loc[data['id'] == id_barang, 'jenis'] = jenis_baru
-
-
-
-            # Menyimpan data yang telah diperbarui ke produk.csv
-            data.to_csv(file, index=False)
-            print("\nData produk berhasil diperbarui:")
-            print("="*30)
-
-            # Menampilkan data yang telah diperbarui 
-            data = log.cek_file(file)
-            hasil_cari = data[data['id'] == id_barang]
-            print(hasil_cari[['id', 'nama','jenis', 'stok']].to_string(index=False))
-            print("="*30)
-            break
-
+                    continue
+        
         else:
             print(f"ID {judul} tidak ditemukan.")
             input("Tekan Enter untuk mencoba kembali.")
@@ -554,8 +646,9 @@ def edit_jenis(file,judul):
 
 
 def edit_stok(file,judul):
+    log.clear_terminal()
     data = log.cek_file(file)
-    print("="*30)
+    tampilan_daftar(file,judul)
 
     while True:
         id_barang = input_int(f"Masukkan ID {judul} yang ingin diedit: ")
@@ -564,26 +657,57 @@ def edit_stok(file,judul):
         if id_barang in data['id'].values:
             # Mengambil baris produk berdasarkan ID
             hasil_cari = data[data['id'] == id_barang]
+            jenis = hasil_cari.iloc[0]["jenis"]
+            nama = hasil_cari.iloc[0]['nama']
+            stok_lama = hasil_cari.iloc[0]['stok']
+
             print(f"\nData {judul} yang akan diedit:")
-            print("="*30)
-            print(hasil_cari[['id', 'nama','jenis', 'stok']].to_string(index=False))
-            print("="*30)
+            print(tabulate(hasil_cari[['id', 'nama','jenis', 'stok']],
+                           headers=['ID','Nama','Jenis','Stok'],
+                           tablefmt="fancy_grid", showindex=False))
 
             # Meminta input untuk memperbarui stok barang
             stok_baru = input_int(f"Stok {judul} baru: ")
-            data.loc[data['id'] == id_barang, 'stok'] = stok_baru
 
-            # Menyimpan data yang telah diperbarui ke produk.csv
-            data.to_csv(file, index=False)
-            print("\nData produk berhasil diperbarui:")
-            print("="*30)
-
-            # Menampilkan data yang telah diperbarui 
-            data = log.cek_file(file)
-            hasil_cari = data[data['id'] == id_barang]
-            print(hasil_cari[['id', 'nama','jenis', 'stok']].to_string(index=False))
-            print("="*30)
-            break
+            log.clear_terminal()
+            print("\nRingkasan Barang:")
+            print("-" * 24)
+            print(f"ID {judul}\t:{id_barang}")
+            print(f"Stok Lama\t:{stok_lama}")
+            print(f"Stok Baru\t:{stok_baru}")
+            print("-" * 24)
+            print(" [1] Selasai")
+            print(" [2] Ulangi")
+            print(" [3] Batal")
+            print("-" * 24)
+            lanjutkan = input("Pilih Menu [1-3]: ")
+            match lanjutkan:
+                case "1":
+                    data.loc[data['id'] == id_barang, 'stok'] = stok_baru
+                    data.to_csv(file, index=False)
+                    # Menyimpan data yang telah diperbarui ke produk.csv
+                    log.clear_terminal()
+                    print("\n==== Edit Nama Berhasil ====")
+                    print("-" * 24)
+                    print(f"ID {judul}:\t{id_barang}")
+                    print(f"Nama {judul}:\t{nama}")
+                    print(f"Jenis:\t\t{jenis}")
+                    print(f"Stok:\t\t{stok_baru}")
+                    print("-" * 24)
+                    return  # Menyelesaikan fungsi setelah pinjam berhasil
+                case "2":
+                    edit_jenis(file,judul)
+                    return
+                case "3":
+                    print("=" * 24)
+                    print("==== Operasi Dibatalkan ====")
+                    # input("Tekan Enter untuk kembali")
+                    break  # Keluar dari fungsi jika pinjam dibatalkan
+                case _:
+                    print("Pilihan Tidak Ada")
+                    input("Tekan Enter untuk mencoba kembali")
+                    log.clear_alert(3)
+                    continue
 
         else:
             print(f"ID {judul} tidak ditemukan.")
@@ -676,8 +800,8 @@ def tambah_pinjam(file, judul, user):
     # Membuat dictionary untuk menyimpan data pinjaman
     data_pinjam = {
         "id": id_pinjam,               # ID pinjaman yang dihasilkan sebelumnya
-        "nim": user['nim'],                    # NIM pengguna yang meminjam
-        "nama": user['nama'],                  # Nama pengguna
+        "nim": user['nim'],            # NIM pengguna yang meminjam
+        "nama": user['nama'],          # Nama pengguna
         "kategori": judul.lower(),     # Kategori barang (judul yang diubah menjadi huruf kecil)
         "id_barang": id_barang,        # ID barang yang dipinjam
         "barang": item,                # Nama barang yang dipinjam
@@ -697,11 +821,11 @@ def tambah_pinjam(file, judul, user):
         log.clear_terminal()
         print("\nRingkasan Barang:")
         print("-" * 24)
-        print(f"Barang\t:{item}")
-        print(f"Jenis\t:{item_jenis}")
-        print(f"Jumlah\t:{jml}")
-        print(f"\nTanggal Pinjam\t:{tgl_pinjam}")
-        print(f"Waktu Tenggat\t:{tenggat}")
+        print(f"Barang\t:{df['nama'].to_string(index=False)}")
+        print(f"Jenis\t:{df['jenis']}")
+        print(f"Jumlah\t:{data_pinjam['jml_pinjam']}")
+        print(f"\nTanggal Pinjam\t:{df['tgl_pinjam']}")
+        print(f"Waktu Tenggat\t:{df['tenggat']}")
         print("-" * 24)
         print(" [1] Ganti Barang")
         print(" [2] Edit Jumlah")
@@ -766,7 +890,7 @@ def tambah_pinjam(file, judul, user):
                         input("Tekan Enter untuk mencoba lagi.")
                         log.clear_alert(3)
                     else:
-                        df["jml_pinjam"] = jml_baru
+                        data_pinjam["jml_pinjam"] = jml_baru
                         print("-"*24)
                         print("Jumlah Barang Berhasil Diganti")
                         input("Tekan Enter untuk melanjutkan")

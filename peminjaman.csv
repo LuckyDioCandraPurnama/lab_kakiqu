@@ -1,6 +1,7 @@
 id,nim,nama,kategori,id_barang,barang,jenis,jml_pinjam,jml_kembali,tgl_pinjam,tgl_kembali,tenggat,status
 1,242410102032,fahmi,alat,2,apron lab,unfragile,2,2,2024-11-26,2024-11-26,2024-11-27,selesai
 2,242410101006,bagas,bahan,2,natrium,padat,10,10,2024-11-28,2024-12-01,2024-11-30,selesai
-3,232410101032,kumar,bahan,4,kalsium,padat,2,1,2024-12-01,2024-12-04,2024-12-05,dipinjam
+3,232410101032,kumar,bahan,4,kalsium,padat,2,1,2024-12-01,2024-12-04,2024-12-05,overdue
 4,242410102032,fahmi,alat,2,apron lab,unfragile,5,5,2024-12-04,2024-12-04,2024-12-06,selesai
 5,242410101054,Fajar,alat,8,gelas ukur,fragile,6,6,2024-12-04,2024-12-04,2024-12-07,selesai
+6,242410101033,anam,bahan,3,sulfur,padat,4,0,2024-12-06,-,2024-12-13,dipinjam
